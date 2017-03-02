@@ -13,6 +13,10 @@ and more!
 
 We're waiting for Relay 2 but in the meantime we wanted to fill some gaps in the features and tidy up the API a bit.
 
+## We're hiring!
+
+If you like working with React and GraphQL and you're interested in building the future of radio check out https://www.mixcloud.com/jobs/
+
 ## Installation
 
 ```
@@ -470,7 +474,3 @@ expect(relayEnv).toHaveMutated();
 expect(relayEnv).toHaveMutated('MyQueryName', {my: 'variable'});
 expect(relayEnv).toHaveMutated('MyQueryName', {my: jasmine.any(String)});
 ```
-
-## We're hiring!
-
-If you're interested in working on problems like this and building the future of radio check out https://www.mixcloud.com/jobs/
