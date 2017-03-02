@@ -1,4 +1,6 @@
-# Relay Helpers
+# Relay Helpers 
+
+[ ![Codeship Status for mixcloud/relay-helpers](https://app.codeship.com/projects/f98f46c0-e185-0134-6c99-0215fb10e28e/status?branch=master)](https://app.codeship.com/projects/205541)
 
 Helpers to simplify and enhance Relay (https://facebook.github.io/relay/) including:
 
