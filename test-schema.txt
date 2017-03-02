@@ -1,0 +1,24 @@
+scalar ID
+
+interface Node {
+    id: ID!
+}
+
+type Todo implements Node {
+    id: ID!
+    title: String!
+    completed: Boolean!
+    user: User!
+    echo(text: String!): String!
+}
+
+type User implements Node {
+    id: ID!
+    username: String!
+    todos(limit: Int, offset: Int): [Todo]!
+}
+
+type Query {
+    node(id: ID!): Node
+    user(id: ID!): User
+}

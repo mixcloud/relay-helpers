@@ -1,0 +1,29 @@
+{
+    "env": {
+        "build": {
+            "presets": [
+                "es2015",
+                "stage-0",
+                "react"
+            ],
+            "plugins": [
+                "react-require",
+                "transform-flow-strip-types"
+            ],
+            "minified": false
+        },
+        "test": {
+            "presets": [
+                "es2015",
+                "stage-0",
+                "react"
+            ],
+            "plugins": [
+                "react-require",
+                "transform-flow-strip-types",
+                "./testBabelRelayPlugin"
+            ],
+            "minified": false
+        }
+    }
+}
