@@ -16,6 +16,11 @@
     "compile": "BABEL_ENV=build babel --ignore __tests__,__mocks__ --out-dir lib/ src/",
     "prepublish": "npm run compile"
   },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "lib/"
+  ],
   "keywords": [
     "graphql",
     "relay",
@@ -23,8 +28,7 @@
   ],
   "author": {
     "name": "Sam Cooke",
-    "email": "sam@mixcloud.com",
-    "url": "https://www.mixcloud.com/jobs/"
+    "email": "sam@mixcloud.com"
   },
   "license": "MIT",
   "dependencies": {
