@@ -174,7 +174,8 @@ describe('Environments', () => {
                     </RelayEnvProvider>
                 );
 
-                env.isomorphicGetData(app).then(() => {
+                env.isomorphicGetData(app).then((markup) => {
+                    expect(markup).toEqual(ReactDOMServer.renderToString(app));
                     expect(ReactDOMServer.renderToStaticMarkup(app)).toEqual('<div>myusername node1</div>');
                     resolve();
                 });

@@ -376,9 +376,10 @@ function MyApp() {
 }
 
 // This will recursively find queries and run them
-env.isomorphicGetData(<MyApp />).then(() => {
+env.isomorphicGetData(<MyApp />).then((markup) => {
+    // markup = ReactDOMServer.renderToString(<MyApp />);
+    
     // query data is ready
-    const markup = ReactDOMServer.renderToString(<MyApp />);
     const relayData = env.isomorphicClientData;
     
     // return the markup to the user and include relayData somehow

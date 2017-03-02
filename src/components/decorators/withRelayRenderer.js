@@ -156,9 +156,12 @@ export default <P: Object>({
                 }
             }
 
-            var shouldForceFetch = forceFetch || this.props.forceFetch;
-            if (!shouldForceFetch && ttl) {
-                shouldForceFetch = this.context.relayEnv.shouldForceFetch(this.queryConfig, ttl);
+            var shouldForceFetch = false;
+            if (!env.isServer) {
+                shouldForceFetch = forceFetch || this.props.forceFetch;
+                if (!shouldForceFetch && ttl) {
+                    shouldForceFetch = this.context.relayEnv.shouldForceFetch(this.queryConfig, ttl);
+                }
             }
 
             // We're in normal render mode

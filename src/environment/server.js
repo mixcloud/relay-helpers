@@ -35,17 +35,19 @@ export default class ServerEnvironment extends BaseEnvironment {
         }).filter((querySetResult) => Object.keys(querySetResult).length > 0);  // Don't include empty/failed results
     }
 
-    isomorphicGetData(element: React.Element<*>, maxRecursions: number = 5): Promise<void[]> {
+    isomorphicGetData(element: React.Element<*>, maxRecursions: number = 5): Promise<string> {
         return isomorphicGetData(this, element, maxRecursions, null);
     }
 }
 
 
-function isomorphicGetData(env: ServerEnvironment, element: React.Element<*>, maxRecursions: number, prevQueryCount: ?number): Promise<*> {
+function isomorphicGetData(env: ServerEnvironment, element: React.Element<*>, maxRecursions: number, prevQueryCount: ?number): Promise<string> {
     // Keep rendering until maxRecursions or the query count doesn't change
-    ReactDOMServer.renderToString(element);
+    const markup = ReactDOMServer.renderToString(element);
     if (maxRecursions === 0 || prevQueryCount === env.isomorphicQueriesMap.size) {
-        return env.isomorphicQueriesPromise;
+        return env.isomorphicQueriesPromise.then(() => {
+            return markup;
+        });
     }
     prevQueryCount = env.isomorphicQueriesMap.size;
     return env.isomorphicQueriesPromise.then(() => isomorphicGetData(env, element, maxRecursions - 1, prevQueryCount));
