@@ -19,7 +19,8 @@
   "files": [
     "LICENSE",
     "README.md",
-    "lib/"
+    "lib/",
+    "src/"
   ],
   "keywords": [
     "graphql",
