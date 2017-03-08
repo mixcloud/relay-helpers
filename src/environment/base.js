@@ -4,12 +4,14 @@ import QuerySetMap from './querySetMap';
 import type {QuerySet} from './querySetMap';
 
 
-export type ServerData = Array<{
+export type ServerResult = {
     [name: string]: {
         query: Object,
         data: Object
     }
-}>;
+};
+
+export type ServerData = ServerResult[];
 
 
 export default class BaseEnvironment extends Relay.Environment {

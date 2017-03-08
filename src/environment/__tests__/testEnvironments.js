@@ -73,6 +73,7 @@ describe('Environments', () => {
             });
 
             jest.runAllTimers();
+            expect(graphqlCalls.length).toEqual(2);
             graphqlCalls.forEach(({args: [{query}], resolve}) => {
                 if (query.match(/node/)) {
                     resolve(data.node);

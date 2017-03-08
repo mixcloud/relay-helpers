@@ -414,6 +414,49 @@ env.isomorphicInjectServerData(serverData).then(() => {
 });
 ```
 
+## Caching
+
+### `querySubscriberDecorator`
+
+`querySubscriberDecorator` is a helper that can be used, for example, to create an offline cache for Relay.
+
+Usage:
+
+```javascript
+var env = new Relay.Environment();
+
+// A simple cache example - this could be persisted to localStorage, for example
+var cache = {};
+
+
+// We listen for all queries
+env.addNetworkSubscriber(querySubscriberDecorator((queryName, variables, result) => {
+    // The helper converts Relay's QueryRequest into something a bit more useful
+    
+    // Selectively choose what you want to cache
+    if (queryName === 'UserProfile') {
+        const cacheKey = `${queryName}|${JSON.stringify(variables)}`;
+        cache[cacheKey] = result;
+    }
+}));
+```
+
+The `result` that `querySubscriberDecorator` passes in is compatible with the `ServerData` used for isomorphic rendering. They
+can be injected into the store in the same way (whether you are using server side rendering or not):
+
+```javascript
+var env = new ClientEnvironment();
+
+// "cache" from the code above - for example loaded from localStorage 
+const localResults = Object.keys(cache).map(key => cache[key]);
+
+// Concatenating serverData and localResults - just pass localResults if you're not using isomorphic rendering
+env.isomorphicInjectServerData([...serverData, ...localResults]).then(() => {
+    // render...
+});
+
+```
+
 ## Tests
 
 Some helpers are provided for testing.

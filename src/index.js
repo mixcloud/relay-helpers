@@ -7,6 +7,7 @@ import withRelayRenderer from './components/decorators/withRelayRenderer';
 import withRelayMutations from './components/decorators/withRelayMutations';
 import ServerEnvironment from './environment/server';
 import ClientEnvironment from './environment/client';
+import {querySubscriberDecorator} from './cache';
 
 
 export default {
@@ -18,5 +19,6 @@ export default {
     withRelayRenderer,
     withRelayMutations,
     ServerEnvironment,
-    ClientEnvironment
+    ClientEnvironment,
+    querySubscriberDecorator
 };

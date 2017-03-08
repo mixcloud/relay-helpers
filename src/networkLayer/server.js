@@ -1,13 +1,16 @@
 /* @flow */
+import Relay from 'react-relay';
 export type FetchQueryFunction = (query: {query: string, variables: Object}) => Promise<{errors?: Array<Object>, data?: Object}>;
 
 
-type QueryRequest = {
+export type QueryRequest = {
     getQueryString: () => string,
     getVariables: () => Object,
     getID: () => string,
+    getQuery: () => Relay.QL,
     resolve: (data: any) => void,
-    reject: (error: any) => void
+    reject: (error: any) => void,
+    then: (onResolve: (result: {response: any}) => void, onReject: ?() => void) => Promise<*>
 };
 
 
