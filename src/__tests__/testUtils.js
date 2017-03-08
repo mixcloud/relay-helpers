@@ -1,7 +1,7 @@
 /* @noflow */
 import Relay from 'react-relay';
 import RelayFragmentReference from 'react-relay/lib/RelayFragmentReference';
-import {wraps, splitQuery} from '../utils';
+import {wraps, splitQuery, namedQuery} from '../utils';
 import createRelayContainer from '../components/decorators/createRelayContainer';
 
 
@@ -10,6 +10,7 @@ describe('utils', () => {
         it('should add and hoist statics', () => {
             function Wrapper() {}
             function TestComponent() {}
+            TestComponent.WrappedComponent = 'test'; // This should not be hoisted
             TestComponent.myStatic = 'test';
             expect(wraps(TestComponent, Wrapper, 'MyDisplayName')).toBe(Wrapper);
             expect(Wrapper.displayName).toEqual('MyDisplayName');
@@ -148,6 +149,13 @@ describe('utils', () => {
             fragment.id = jasmine.any(String);
 
             expect(splitQuery(query, 'MyQueryName')).toEqual({routeQuery, fragment});
+        });
+    });
+
+    describe('namedQuery', () => {
+        it('should add a name to a query', () => {
+            const named = namedQuery('MyName', () => Relay.QL`query { user(id: $userId) }`);
+            expect(named().name).toEqual('MyName');
         });
     });
 });

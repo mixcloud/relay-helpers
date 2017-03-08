@@ -13,6 +13,6 @@ describe('createRelayContainer', () => {
         const config = {initialVariables: {}, fragments: {}};
         const Container = createRelayContainer(config)(TestComponent);
         expect(Relay.createContainer).toBeCalledWith(TestComponent, config);
-        expect(Container).toEqual({test: 'component'});
+        expect(Container).toEqual({WrappedComponent: TestComponent, test: 'component'});
     });
 });

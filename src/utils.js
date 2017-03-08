@@ -10,7 +10,7 @@ export function wraps<P>(Component: ReactClass<P>, Wrapper: WrappedComponent<P>,
     if (displayName) {
         Wrapper.displayName = displayName;
     }
-    hoistNonReactStatics(Wrapper, Component);
+    hoistNonReactStatics(Wrapper, Component, {WrappedComponent: true});
     return Wrapper;
 }
 
@@ -67,3 +67,10 @@ export function splitQuery(query: Relay.QL, name: string = 'Index'): {routeQuery
     }
     return {routeQuery, fragment};
 }
+
+
+export const namedQuery = (name: string, queryFactory: () => Relay.QL) => () => {
+    const query = queryFactory();
+    query.name = name;
+    return query;
+};
