@@ -27,7 +27,7 @@ export function querySubscriberDecorator(onResponse: QuerySubscriber) {
                     variables = {
                         ...variables,
                         ...query.getVariables()
-                    }
+                    };
                     serverResult[fieldName] = {
                         query: toGraphQL.Query(query),
                         data
