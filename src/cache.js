@@ -24,8 +24,9 @@ export function querySubscriberDecorator(onResponse: QuerySubscriber) {
                     const {response: data} = results[i];
                     const fieldName = fieldNames[i];
                     const query = queryRequests[fieldName].getQuery();
-                    if (!variables) {
-                        variables = query.getVariables();
+                    variables = {
+                        ...variables,
+                        ...query.getVariables()
                     }
                     serverResult[fieldName] = {
                         query: toGraphQL.Query(query),

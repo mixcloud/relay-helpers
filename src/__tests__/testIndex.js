@@ -12,5 +12,6 @@ describe('Public interface', () => {
         expect('withRelayMutations' in RelayHelpers).toBe(true);
         expect('ServerEnvironment' in RelayHelpers).toBe(true);
         expect('ClientEnvironment' in RelayHelpers).toBe(true);
+        expect('querySubscriberDecorator' in RelayHelpers).toBe(true);
     });
 });
