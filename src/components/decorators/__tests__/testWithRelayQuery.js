@@ -3,7 +3,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import withRelayQuery from '../withRelayQuery';
 import {shallow, mount} from 'enzyme';
-import {createMockRelayEnv} from "../../../tests/mocks";
+import createMockRelayEnv from "../../../tests/mocks/createMockRelayEnv";
 
 
 function TestComponent() { return null; }

@@ -1,7 +1,7 @@
 /* @noflow */
 import React from 'react';
 import withRelayMutations from '../withRelayMutations';
-import {createMockRelayEnv} from '../../../tests/mocks';
+import createMockRelayEnv from '../../../tests/mocks/createMockRelayEnv';
 import {shallow} from 'enzyme';
 
 

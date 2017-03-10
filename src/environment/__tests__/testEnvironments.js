@@ -8,7 +8,7 @@ import {shallow} from 'enzyme';
 import toGraphQL from 'react-relay/lib/toGraphQL';
 import fromGraphQL from 'react-relay/lib/fromGraphQL';
 import withRelayQuery from '../../components/decorators/withRelayQuery';
-import {createMockRelayEnv} from "../../tests/mocks";
+import createMockRelayEnv from "../../tests/mocks/createMockRelayEnv";
 import RelayEnvProvider from '../../components/RelayEnvProvider';
 
 

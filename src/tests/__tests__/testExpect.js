@@ -1,5 +1,5 @@
 /* @noflow */
-import {createMockRelayEnv} from '../mocks';
+import createMockRelayEnv from '../mocks/createMockRelayEnv';
 require('../expect');
 
 

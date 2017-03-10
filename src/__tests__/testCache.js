@@ -5,7 +5,7 @@ import withRelayQuery from '../components/decorators/withRelayQuery';
 import ClientEnvironment from '../environment/client';
 import {querySubscriberDecorator} from "../cache";
 import {mount} from 'enzyme';
-import {createMockRelayEnv} from '../tests/mocks';
+import createMockRelayEnv from '../tests/mocks/createMockRelayEnv';
 
 
 function TestComponent() {

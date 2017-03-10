@@ -1,13 +1,17 @@
 /* @noflow */
 import React from 'react';
 import Relay from 'react-relay';
-import withRelayQuery from '../../components/decorators/withRelayQuery';
+import withRelayQuery from '../../../components/decorators/withRelayQuery';
 import {shallow} from 'enzyme';
-import {createMockRelayEnv} from '../mocks';
+import createMockRelayEnv from '../createMockRelayEnv';
 
 
 jest.mock('react-relay', () => {
-    return require('../mocks').Relay;
+    const Renderer = require('../MockRelayRenderer').default;
+    return {
+        ...require.requireActual('react-relay'),
+        Renderer
+    };
 });
 
 
