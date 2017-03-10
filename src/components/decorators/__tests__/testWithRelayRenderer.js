@@ -149,6 +149,26 @@ describe('withRelayRenderer', () => {
         });
     });
 
+    it('should only update the queryConfig if it has changed', () => {
+        const Wrapper = withRelayRenderer({
+            queryConfig: {
+                name: 'TestQuery',
+                queries,
+                params: {
+                    id: {required: true},
+                    somethingelse: {required: false}
+                }
+            }
+        })(Container);
+
+        const wrapper = shallow(<Wrapper id="someid" />, {context: mockContext});
+        const queryConfig = wrapper.props().queryConfig;
+        wrapper.setProps({something: '123'});
+        expect(wrapper.props().queryConfig).toBe(queryConfig);
+        wrapper.setProps({id: '123'});
+        expect(wrapper.props().queryConfig).not.toBe(queryConfig);
+    });
+
     it('should render with different states', () => {
         const wrapper = shallow(<Wrapper another="test" />, {context: mockContext});
 

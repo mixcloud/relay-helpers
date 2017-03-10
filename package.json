@@ -33,6 +33,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "deep-equal": "^1.0.1",
     "hoist-non-react-statics": "^1.0.3",
     "react-relay": "0.10.0"
   },

@@ -2,6 +2,7 @@
 import React from 'react';
 import Relay from 'react-relay';
 import {wraps} from '../../utils';
+import deepEqual from 'deep-equal';
 import {RelayEnvContextType} from "../RelayEnvProvider/index";
 import type {RelayEnvContext} from "../RelayEnvProvider/index";
 import type {WrappedComponent} from '../../utils';
@@ -55,7 +56,11 @@ export default <P: Object>({
         }
 
         componentWillUpdate(nextProps: P) {
-            this.queryConfig = this.getQueryConfig(nextProps);
+            const newQueryConfig = this.getQueryConfig(nextProps);
+            if (!deepEqual(newQueryConfig, this.queryConfig)) {
+                // only update the queryConfig if it has changed, otherwise Relay will run the query again
+                this.queryConfig = newQueryConfig;
+            }
         }
 
         queryConfig: QueryConfig = this.getQueryConfig(this.props);
