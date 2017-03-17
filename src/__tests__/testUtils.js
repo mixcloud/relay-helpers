@@ -157,5 +157,12 @@ describe('utils', () => {
             const named = namedQuery('MyName', () => Relay.QL`query { user(id: $userId) }`);
             expect(named().name).toEqual('MyName');
         });
+
+        it('should add a name to a query with args', () => {
+            const queryFactory = jest.fn(() => Relay.QL`query { user(id: $userId) }`);
+            const named = namedQuery('MyName', queryFactory);
+            expect(named('arg1', 2).name).toEqual('MyName');
+            expect(queryFactory).toBeCalledWith('arg1', 2);
+        });
     });
 });

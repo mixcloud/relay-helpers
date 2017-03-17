@@ -69,8 +69,8 @@ export function splitQuery(query: Relay.QL, name: string = 'Index'): {routeQuery
 }
 
 
-export const namedQuery = (name: string, queryFactory: () => Relay.QL) => () => {
-    const query = queryFactory();
+export const namedQuery = (name: string, queryFactory: (...args: any) => Relay.QL) => (...args: any) => {
+    const query = queryFactory(...args);
     query.name = name;
     return query;
 };

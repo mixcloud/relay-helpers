@@ -14,10 +14,10 @@ type RelayMutationConfig = (
     |}
   | {|
         type: 'NODE_DELETE',
-        parentName: string,
-        parentID: string,
-        connectionName: string,
-        deletedIDFieldName: string | string[]
+        deletedIDFieldName: string | string[],
+        parentName?: string,
+        parentID?: string,
+        connectionName?: string
     |}
   | {|
         type: 'RANGE_DELETE',
