@@ -2,6 +2,7 @@
 import Relay from 'react-relay';
 import type {FileMap} from 'react-relay/lib/RelayTypes';
 
+type RangeBehavior = 'prepend' | 'append' | 'ignore' | 'refetch' | 'remove';
 
 type RelayMutationConfig = (
     {|
@@ -10,7 +11,10 @@ type RelayMutationConfig = (
         parentID: string,
         connectionName: string,
         edgeName: string,
-        rangeBehaviors: {[behaviour: string]: 'prepend' | 'append' | 'ignore' | 'refetch' | 'remove'}
+        rangeBehaviors: (
+            {[behaviour: string]: RangeBehavior}
+          | (args: Object) => RangeBehavior
+        )
     |}
   | {|
         type: 'NODE_DELETE',
@@ -47,14 +51,14 @@ export type Mutate = (config: MutationConfig) => Promise<*>;
 
 
 export default function mutate(env: Relay.Environment, config: MutationConfig): Promise<*> {
-    const {query, variables, files, optimisticResponse, configs = []} = config;
+    const {query, variables, files = null, optimisticResponse, configs = []} = config;
     return new Promise((resolve, reject) => {
         const mutation = new Relay.GraphQLMutation(query, variables, files, env, {
             onSuccess: resolve,
             onFailure: reject
         });
         if (optimisticResponse) {
-            mutation.applyOptimistic(query, optimisticResponse);
+            mutation.applyOptimistic(query, optimisticResponse, configs);
         }
         mutation.commit(configs);
     });
