@@ -41,11 +41,12 @@ describe('mutate', () => {
     it('should handle optimistic responses', () => {
         mutate({}, {
             query: {q: 1},
-            optimisticResponse: {o: 1}
+            optimisticResponse: {o: 1},
+            configs: [{c: 1}]
         });
         expect(Relay.mutations.length).toEqual(1);
-        expect(Relay.mutations[0].applyOptimistic).toBeCalledWith({q: 1}, {o: 1});
-        expect(Relay.mutations[0].commit).toBeCalledWith([]);
+        expect(Relay.mutations[0].applyOptimistic).toBeCalledWith({q: 1}, {o: 1}, [{c: 1}]);
+        expect(Relay.mutations[0].commit).toBeCalledWith([{c: 1}]);
     });
 
     it('should return a promise and handle onSuccess', () => {
