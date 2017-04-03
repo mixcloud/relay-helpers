@@ -41,7 +41,7 @@ export default <P: Object>(
     }: Options<P>
 ) => (Component: WrappedComponent<P>): ReactClass<P> => {
     // Grab the name from the component if it is not passed in manually
-    name = name || getComponentName(Component)
+    name = name || getComponentName(Component);
 
     // Split out queries and fragments from query
     const queries = {};

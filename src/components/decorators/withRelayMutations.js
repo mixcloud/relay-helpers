@@ -21,5 +21,5 @@ export default (mutations: Mutations) => (Component: WrappedComponent<*>): React
         return <Component {...props} {...mutationProps} />;
     }
     Wrapper.contextTypes = {relayEnv: RelayEnvContextType};
-    return wraps(Component, Wrapper, `WithRelayMutationsWrapping${Component.displayName || Component.name || Component.constructor.name}`);
+    return wraps(Component, Wrapper, `WithRelayMutations(${Component.displayName || Component.name || Component.constructor.name})`);
 };
