@@ -37,7 +37,7 @@ export default <P: Object>(
     // Grab the name from the component if it is not passed in manually
     const componentName = Component.displayName || Component.name || ((Component.constructor: any).name: any);
     name = name || componentName;
-    
+
     // Remove reserved characters
     name = name.replace(/\W/g, '');
 
