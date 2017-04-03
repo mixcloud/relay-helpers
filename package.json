@@ -1,6 +1,6 @@
 {
   "name": "relay-helpers",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Helpers to simplify and enhance Relay",
   "repository": {
     "type": "git",
