@@ -21,6 +21,12 @@ type Options<P> = {|
     isomorphic?: boolean
 |};
 
+function getComponentName(Component) {
+    if (Component.WrappedComponent) {
+        return getComponentName(Component.WrappedComponent);
+    }
+    return Component.displayName || Component.name || Component.constructor.name;
+}
 
 export default <P: Object>(
     {
@@ -35,11 +41,7 @@ export default <P: Object>(
     }: Options<P>
 ) => (Component: WrappedComponent<P>): ReactClass<P> => {
     // Grab the name from the component if it is not passed in manually
-    const componentName = Component.displayName || Component.name || ((Component.constructor: any).name: any);
-    name = name || componentName;
-
-    // Remove reserved characters
-    name = name.replace(/\W/g, '');
+    name = name || getComponentName(Component)
 
     // Split out queries and fragments from query
     const queries = {};
