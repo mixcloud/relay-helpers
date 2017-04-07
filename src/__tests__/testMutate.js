@@ -59,7 +59,9 @@ describe('mutate', () => {
     it('should return a promise and handle onFailure', () => {
         return new Promise(resolve => {
             mutate({}, {}).then(null, resolve);
-            Relay.mutations[0].args[4].onFailure();
+            Relay.mutations[0].args[4].onFailure({getError: () => "Error message"});
+        }).then((error) => {
+            expect(error).toBe("Error message");
         });
     });
 });
