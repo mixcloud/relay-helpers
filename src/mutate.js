@@ -55,7 +55,7 @@ export default function mutate(env: Relay.Environment, config: MutationConfig): 
     return new Promise((resolve, reject) => {
         const mutation = new Relay.GraphQLMutation(query, variables, files, env, {
             onSuccess: resolve,
-            onFailure: reject
+            onFailure: (transaction) => reject(transaction.getError())
         });
         if (optimisticResponse) {
             mutation.applyOptimistic(query, optimisticResponse, configs);
