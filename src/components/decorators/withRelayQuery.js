@@ -25,7 +25,11 @@ function getComponentName(Component) {
     if (Component.WrappedComponent) {
         return getComponentName(Component.WrappedComponent);
     }
-    return Component.displayName || Component.name || Component.constructor.name;
+    const name = Component.displayName || Component.name || Component.constructor.name;
+    if (process.env.NODE_ENV !== "production" && name.indexOf('(') > -1) {
+        throw Error(`Auto generated component name has brackets in it - this is probably due to a higher order component. You will either want to change the order of your higher order components or provide a name option to withRelayQuery.`);
+    }
+    return name;
 }
 
 export default <P: Object>(

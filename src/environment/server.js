@@ -8,6 +8,9 @@ import type {ServerData} from './base';
 import type {FetchQueryFunction} from '../networkLayer/server';
 
 
+const MAX_RECURSIONS = 10;
+
+
 export default class ServerEnvironment extends BaseEnvironment {
     constructor(fetchQuery: FetchQueryFunction) {
         super();
@@ -35,7 +38,7 @@ export default class ServerEnvironment extends BaseEnvironment {
         }).filter((querySetResult) => Object.keys(querySetResult).length > 0);  // Don't include empty/failed results
     }
 
-    isomorphicGetData(element: React.Element<*>, maxRecursions: number = 5): Promise<string> {
+    isomorphicGetData(element: React.Element<*>, maxRecursions: number = MAX_RECURSIONS): Promise<string> {
         return isomorphicGetData(this, element, maxRecursions, null);
     }
 }
