@@ -254,8 +254,8 @@ describe('Environments', () => {
             });
         });
 
-        it('should run queries with the Relay.Environment.primeCache method', () => {
-            relayEnv.env.primeCache = jest.fn(relayEnv.env.primeCache.bind(relayEnv.env));
+        it('should run queries with the Relay.Environment.forceFetch method', () => {
+            relayEnv.env.forceFetch = jest.fn(relayEnv.env.forceFetch.bind(relayEnv.env));
             const wrapper = shallow(
                 <Wrapper userId="userId" nodeId="nodeId" />,
                 {context: {relayEnv}}
@@ -263,11 +263,11 @@ describe('Environments', () => {
             // Nothing rendered
             expect(wrapper.node).toBe(null);
 
-            // ... and called primeCache to fetch the data ...
-            expect(relayEnv.env.primeCache.mock.calls.length).toEqual(1);
+            // ... and called forceFetch to fetch the data ...
+            expect(relayEnv.env.forceFetch.mock.calls.length).toEqual(1);
             const [
                 [querySet]
-            ] = relayEnv.env.primeCache.mock.calls;
+            ] = relayEnv.env.forceFetch.mock.calls;
             expect(Object.keys(querySet)).toEqual(['user', 'node']);
         });
 

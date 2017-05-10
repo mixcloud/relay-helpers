@@ -12,6 +12,7 @@ export type ServerResult = {
 };
 
 export type ServerData = ServerResult[];
+export type OnReadyStateChange = (readyState: {error: ?Error, aborted: boolean, done: boolean}) => void;
 
 
 export default class BaseEnvironment extends Relay.Environment {
@@ -40,7 +41,7 @@ export default class BaseEnvironment extends Relay.Environment {
         const promise = new Promise((resolve) => {
             // Tell Relay that we need data for this query - on the server it will perform the query, on the
             // client it will find the cached results.
-            this.primeCache(querySet, (readyState) => {
+            this.isomorphicFetchQuerySet(querySet, (readyState) => {
                 if (readyState.error || readyState.aborted || readyState.done) {
                     const pendingQuery = this.isomorphicQueriesMap.get(querySet);
                     if (pendingQuery) {
@@ -53,6 +54,10 @@ export default class BaseEnvironment extends Relay.Environment {
         });
         this.isomorphicQueriesMap.set(querySet, {promise, result: {}});
     };
+
+    isomorphicFetchQuerySet(querySet: QuerySet, onReadyStateChange: OnReadyStateChange) {
+        this.primeCache(querySet, onReadyStateChange);
+    }
 
     get isomorphicQueriesPromise(): Promise<void[]> {
         return Promise.all(this.isomorphicQueriesMap.values().map(({promise}) => promise));
