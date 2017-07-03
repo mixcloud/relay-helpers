@@ -1,5 +1,5 @@
 /* @flow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import type {WrappedComponent} from '../../utils';
 import type {RelayContainerSpec} from 'react-relay/lib/RelayContainer';
 

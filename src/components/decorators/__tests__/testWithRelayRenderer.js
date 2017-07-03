@@ -1,6 +1,6 @@
 /* @noflow */
 import React from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import withRelayRenderer from '../withRelayRenderer';
 import {shallow} from 'enzyme';
 import createMockRelayEnv from '../../../tests/mocks/createMockRelayEnv';

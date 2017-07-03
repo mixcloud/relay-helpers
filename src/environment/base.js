@@ -1,5 +1,5 @@
 /* @flow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import QuerySetMap from './querySetMap';
 import type {QuerySet} from './querySetMap';
 

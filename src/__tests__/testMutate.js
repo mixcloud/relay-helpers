@@ -1,8 +1,8 @@
 /* @noflow */
 import mutate from '../mutate';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
-jest.mock('react-relay', () => {
+jest.mock('react-relay/classic', () => {
     const Relay = {
         mutations: [],
     };

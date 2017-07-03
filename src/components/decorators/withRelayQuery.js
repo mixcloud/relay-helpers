@@ -1,5 +1,5 @@
 /* @flow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import withRelayRenderer from './withRelayRenderer';
 import withRelayHelpersDecorator from './withRelayHelpers';
 import createRelayContainer from './createRelayContainer';

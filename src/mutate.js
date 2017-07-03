@@ -1,5 +1,5 @@
 /* @flow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import type {FileMap} from 'react-relay/lib/RelayTypes';
 
 type RangeBehavior = 'prepend' | 'append' | 'ignore' | 'refetch' | 'remove';

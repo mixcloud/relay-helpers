@@ -1,6 +1,6 @@
 /* @flow */
 import React from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 
 export type WrappedComponent<P> = ReactClass<P> | (props: P) => ?React.Element<*>;

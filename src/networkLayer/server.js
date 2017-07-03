@@ -1,5 +1,5 @@
 /* @flow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 export type FetchQueryFunction = (query: {query: string, variables: Object}) => Promise<{errors?: Array<Object>, data?: Object}>;
 
 

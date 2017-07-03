@@ -1,6 +1,6 @@
 /* @flow */
 import React from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import {wraps} from '../../utils';
 import deepEqual from 'deep-equal';
 import {RelayEnvContextType} from "../RelayEnvProvider/index";

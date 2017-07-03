@@ -1,7 +1,7 @@
 /* @noflow */
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import ClientEnvironment from '../client';
 import ServerEnvironment from '../server';
 import {shallow} from 'enzyme';

@@ -1,6 +1,6 @@
 /* @noflow */
 import React from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import withRelayQuery from '../components/decorators/withRelayQuery';
 import ClientEnvironment from '../environment/client';
 import {querySubscriberDecorator} from "../cache";

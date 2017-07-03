@@ -1,6 +1,6 @@
 /* @noflow */
 import React from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import RelayEnvProvider from '../';
 import {shallow} from 'enzyme';
 import mutate from '../../../mutate';

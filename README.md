@@ -31,7 +31,7 @@ npm install relay-helpers
 `relay-helpers`.
 
 ```javascript
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import {RelayEnvProvider} from 'relay-helpers';
 
 
@@ -55,7 +55,7 @@ Under some circumstances you will want to reset the entire store (e.g. log in or
 `RelayEnvProvider` has a `reset()` method:
 
 ```javascript
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import {RelayEnvProvider, RelayEnvContextType} from 'relay-helpers';
 
 
@@ -473,9 +473,9 @@ import {Relay as MockedRelay} from 'relay-helpers/lib/tests/mocks';
 Usage (example using jest, but jest isn't required):
 
 ```javascript
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
-jest.mock('react-relay', () => {
+jest.mock('react-relay/classic', () => {
     return require('relay-helpers/lib/tests/mocks').Relay;
 });
 

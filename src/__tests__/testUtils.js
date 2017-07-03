@@ -1,5 +1,5 @@
 /* @noflow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import RelayFragmentReference from 'react-relay/lib/RelayFragmentReference';
 import {wraps, splitQuery, namedQuery} from '../utils';
 import createRelayContainer from '../components/decorators/createRelayContainer';

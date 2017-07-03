@@ -1,6 +1,6 @@
 /* @flow */
 import React, {Children, PropTypes} from 'react';
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 import QueryFetchCache from "./queryFetchCache";
 import mutate from '../../mutate';
 import type {MutationConfig} from '../../mutate';
