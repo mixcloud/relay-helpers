@@ -1,6 +1,7 @@
 /* @flow */
 import React from 'react';
 import Relay from 'react-relay/classic';
+import PropTypes from 'prop-types';
 import {wraps} from '../../utils';
 import deepEqual from 'deep-equal';
 import {RelayEnvContextType} from "../RelayEnvProvider/index";
@@ -188,7 +189,7 @@ export default <P: Object>({
     if (queryConfigParams) {
         // Grab propTypes from the paramDefinitions - just PropTypes.any for now, but handles isRequired
         Wrapper.propTypes = Object.keys(queryConfigParams).reduce((propTypes, paramName) => {
-            propTypes[paramName] = queryConfigParams[paramName].required ? React.PropTypes.any.isRequired : React.PropTypes.any;
+            propTypes[paramName] = queryConfigParams[paramName].required ? PropTypes.any.isRequired : PropTypes.any;
             return propTypes;
         }, {});
     }
