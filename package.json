@@ -48,7 +48,7 @@
     "babel-preset-react": "^6.23.0",
     "babel-preset-stage-0": "^6.22.0",
     "babel-relay-plugin": "^0.11.0",
-    "enzyme": "^2.7.1",
+    "enzyme": "^2.9.1",
     "eslint": "^3.16.1",
     "eslint-plugin-flowtype": "^2.30.0",
     "eslint-plugin-header": "^1.0.0",
@@ -56,10 +56,10 @@
     "flow-bin": "^0.40.0",
     "jest": "^19.0.2",
     "jest-jasmine2": "^19.0.2",
-    "react-addons-test-utils": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-addons-test-utils": "^15.5.1",
+    "react-dom": "^15.5.1"
   },
   "peerDependencies": {
-    "react": "^15.5.0"
+    "react": "react@^0.13.0 || ^0.14.0 || ^15.0"
   }
 }
