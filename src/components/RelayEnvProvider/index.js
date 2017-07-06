@@ -1,5 +1,6 @@
 /* @flow */
-import React, {Children, PropTypes} from 'react';
+import React, {Children} from 'react';
+import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import QueryFetchCache from "./queryFetchCache";
 import mutate from '../../mutate';
