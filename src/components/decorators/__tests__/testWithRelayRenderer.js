@@ -1,6 +1,7 @@
 /* @noflow */
 import React from 'react';
 import Relay from 'react-relay/classic';
+import PropTypes from 'prop-types';
 import withRelayRenderer from '../withRelayRenderer';
 import {shallow} from 'enzyme';
 import createMockRelayEnv from '../../../tests/mocks/createMockRelayEnv';
@@ -125,8 +126,8 @@ describe('withRelayRenderer', () => {
                     }
                 }
             })(Container);
-            expect(Wrapper.propTypes.id({id: 'dsf'}, 'id', 'Wrapper')).toBe(null);
-            expect(Wrapper.propTypes.id({}, 'id', 'Wrapper')).not.toBe(null);
+            expect(PropTypes.checkPropTypes(Wrapper.propTypes, {id: 'dsf'}, 'id', 'Wrapper')).toBe(null);
+            expect(PropTypes.checkPropTypes(Wrapper.propTypes, {}, 'id', 'Wrapper')).not.toBe(null);
         });
 
         it('should take params from props', () => {
