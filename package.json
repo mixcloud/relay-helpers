@@ -56,9 +56,9 @@
     "flow-bin": "^0.40.0",
     "jest": "^19.0.2",
     "jest-jasmine2": "^19.0.2",
-    "react-test-renderer": "^15.5.1",
-    "react": "^15.5.1",
-    "react-dom": "^15.5.1"
+    "react": "15.5.1",
+    "react-dom": "15.5.1",
+    "react-test-renderer": "^15.5.1"
   },
   "peerDependencies": {
     "react": "^15.5.1",

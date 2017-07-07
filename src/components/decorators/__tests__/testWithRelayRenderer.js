@@ -116,6 +116,15 @@ describe('withRelayRenderer', () => {
     });
 
     describe('params', () => {
+        var consoleError;
+        beforeEach(() => {
+            consoleError = console.error;
+            console.error = jest.fn();
+        });
+        afterEach(() => {
+            console.error = consoleError;
+        });
+
         it('should add proptypes to the wrapper', () => {
             const Wrapper = withRelayRenderer({
                 queryConfig: {
@@ -126,8 +135,10 @@ describe('withRelayRenderer', () => {
                     }
                 }
             })(Container);
-            expect(PropTypes.checkPropTypes(Wrapper.propTypes, {id: 'dsf'}, 'id', 'Wrapper')).toBe(null);
-            expect(PropTypes.checkPropTypes(Wrapper.propTypes, {}, 'id', 'Wrapper')).not.toBe(null);
+            PropTypes.checkPropTypes(Wrapper.propTypes, {id: 'dsf'}, 'id', 'Wrapper');
+            expect(console.error).not.toBeCalled();
+            PropTypes.checkPropTypes(Wrapper.propTypes, {}, 'id', 'Wrapper');
+            expect(console.error).toBeCalled();
         });
 
         it('should take params from props', () => {
