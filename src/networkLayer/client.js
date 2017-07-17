@@ -72,19 +72,15 @@ export default class ClientNetworkLayer {
                 xhr.withCredentials = true;
             }
 
-            const headers = this.csrf ? {...this.headers, 'X-CSRFToken': getCsrfCookie()} : this.headers;
-            Object.keys(headers).forEach(name => {
-                xhr.setRequestHeader(name, headers[name]);
-            });
-
             xhr.addEventListener("progress", (event: ProgressEvent) => {
+                console.log(event)
                 if (!event.lengthComputable || !(event.total > 0) || xhr.readyState >= 4) {
                     return;
                 }
 
                 const {loaded, total} = event;
-                console.log('progress', loaded, total);
-            });
+                console.log('progress', loaded, total); // TODO: Work out why this isn't working
+            }, false);
 
             xhr.addEventListener("load", () => {
                 if (xhr.status === 403 && this.on403callback) {
@@ -125,8 +121,10 @@ export default class ClientNetworkLayer {
             });
 
             xhr.addEventListener("abort", () => {
-                // TODO: reject or ignore as if the request wasn't sent?
+                // TODO: Remove request from xhrs on abort, success and error
             });
+
+            const headers = this.csrf ? {...this.headers, 'X-CSRFToken': getCsrfCookie()} : {...this.headers};
 
             const files = request.getFiles && request.getFiles();
             var body;
@@ -145,6 +143,7 @@ export default class ClientNetworkLayer {
                     }
                 });
                 body = form;
+                delete headers['Content-Type'];
             } else {
                 body = JSON.stringify({
                     id,
@@ -152,6 +151,11 @@ export default class ClientNetworkLayer {
                     variables: request.getVariables()
                 });
             }
+
+            Object.keys(headers).forEach(name => {
+                xhr.setRequestHeader(name, headers[name]);
+            });
+
             xhr.send(body);
 
             const xhrId = getUniqueRequestID(request);
