@@ -24,4 +24,6 @@ export default class ClientEnvironment extends BaseEnvironment {
 
         return this.isomorphicQueriesPromise;
     }
+
+    _xhrRequests: Map<string, XMLHttpRequest> = new Map();
 }

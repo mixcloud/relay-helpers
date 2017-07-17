@@ -14,7 +14,8 @@
     "test-watch": "BABEL_ENV=test jest --config=jest.config.json --watch --onlyChanged",
     "flow": "flow .",
     "compile": "BABEL_ENV=build babel --ignore __tests__,__mocks__ --out-dir lib/ src/",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run compile",
+    "jon-watch": "BABEL_ENV=build babel -w --ignore __tests__,__mocks__ --out-dir /Users/jonathan/src/github.com/mixcloud/mixcloud/website/js/node_modules/relay-helpers/lib/ src "
   },
   "files": [
     "LICENSE",
@@ -38,11 +39,11 @@
     "react-relay": "1.1.0"
   },
   "devDependencies": {
-    "babel": "^6.23.0",
     "babel-cli": "^6.23.0",
     "babel-eslint": "^7.1.1",
     "babel-jest": "^19.0.0",
     "babel-plugin-react-require": "^3.0.0",
+    "babel-plugin-transform-builtin-extend": "1.1.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.23.0",
@@ -59,7 +60,7 @@
     "react-test-renderer": "^15.5.1"
   },
   "peerDependencies": {
-    "react": "15.5.1",
-    "react-dom": "15.5.1"
+    "react": "15.6.1",
+    "react-dom": "15.6.1"
   }
 }

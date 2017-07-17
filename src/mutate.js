@@ -48,18 +48,64 @@ export type MutationConfig = {
 
 export type Mutate = (config: MutationConfig) => Promise<*>;
 
+type PromiseParams = {env: Relay.Environment, config: MutationConfig} | Function;
 
+class MutationPromise extends Promise {
+    abort: () => void = () => {};
+    onProgress: () => void = () => {};
+    executor: (
+      resolve: (result: Promise<*>) => void,
+      reject: (error: any) => void
+    ) => mixed;
+    env: Relay.Environment;
+    mutation: Relay.GraphQLMutation;
+    promise: Promise<*>;
 
-export default function mutate(env: Relay.Environment, config: MutationConfig): Promise<*> {
-    const {query, variables, files = null, optimisticResponse, configs = []} = config;
-    return new Promise((resolve, reject) => {
-        const mutation = new Relay.GraphQLMutation(query, variables, files, env, {
-            onSuccess: resolve,
-            onFailure: (transaction) => reject(transaction.getError())
-        });
-        if (optimisticResponse) {
-            mutation.applyOptimistic(query, optimisticResponse, configs);
+    constructor(params: PromiseParams) {
+        if (typeof params === 'function') {
+            // Promise constructor is called again on catch, in which case we
+            // just run the executor directly as a normal promise.
+            super(params);
+            return;
         }
-        mutation.commit(configs);
-    });
+
+        const {env, config} = params;
+        const {query, variables, files = null, optimisticResponse, configs = []} = config;
+
+        var mutation;
+        super((resolve, reject) => {
+            mutation = new Relay.GraphQLMutation(query, variables, files, env, {
+                onSuccess: resolve,
+                onFailure: (transaction) => reject(transaction.getError())
+            });
+            if (optimisticResponse) {
+                mutation.applyOptimistic(query, optimisticResponse, configs);
+            }
+            mutation.commit(configs);
+        });
+
+        this.mutation = mutation;
+        this.env = env;
+        this.abort = () => {
+            if (this.xhr) {
+                this.xhr.abort();
+            }
+        };
+        this.onProgress = () => {};
+    }
+
+    get xhr() {
+        try {
+            const mutationId = this.mutation._transaction.id;
+            const xhr = this.env._xhrRequests.get(mutationId);
+            console.log(xhr);
+            return xhr;
+        } catch (e) {
+            console.error('No xhr or mutation');
+        }
+    }
+}
+
+export default function mutate(env: Relay.Environment, config: MutationConfig): MutationPromise {
+    return new MutationPromise({env, config});
 }

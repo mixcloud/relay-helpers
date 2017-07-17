@@ -1,5 +1,5 @@
 /* @flow */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
 export type ClientNetworkLayerOpts = {
     graphqlUrl?: ?string,
@@ -13,7 +13,6 @@ export type ClientNetworkLayerOpts = {
     onMutationProgressCallback?: ?(id: number, received: number, size: number) => void,
     env: Relay.Environment
 };
-
 
 var nextRequestId = 0;
 var nextTraceId = 0;
@@ -31,6 +30,10 @@ function addTraceIds(trace) {
     return trace;
 }
 
+const getUniqueRequestID = (request) => request.getID
+    ? request.getID()
+    : request.getVariables().input_0.clientMutationId;
+
 export default class ClientNetworkLayer {
     url = '/graphql';
     headers = {
@@ -38,7 +41,7 @@ export default class ClientNetworkLayer {
         'Content-Type': 'application/json',
     };
     credentials = 'same-origin';
-    csrf = null;
+    csrf = true;
     on403callback = null;
     onSpeedbarResponse = null;
     onJailedCallback = null;
@@ -55,16 +58,13 @@ export default class ClientNetworkLayer {
     };
 
     sendMutation(mutationRequest: any) {
-        const id = mutationRequest.getID ? mutationRequest.getID() : `mutation${Math.random()}`;  // TODO: better ID - maybe use mutationRequest.getVariables().clientRequestMutationId or whatever the variable is called
+        const id = getUniqueRequestID(mutationRequest);
         return this._send(id, 'mutation', mutationRequest);
     }
 
-    _send(id: string, requestType: string, request: any) {
+    _send = (id: string, requestType: string, request: any) => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-
-            // TODO: this.env.setXHR(id, xhr);
-            // TODO: .then(this.env.clearXHR(id)).catch(this.env.clearXHR(id))
 
             xhr.open('POST', this.url, true);
             xhr.responseType = 'json';
@@ -77,7 +77,7 @@ export default class ClientNetworkLayer {
                 xhr.setRequestHeader(name, headers[name]);
             });
 
-            xhr.addEventListener('progress', (event: ProgressEvent) => {
+            xhr.addEventListener("progress", (event: ProgressEvent) => {
                 if (!event.lengthComputable || !(event.total > 0) || xhr.readyState >= 4) {
                     return;
                 }
@@ -153,6 +153,16 @@ export default class ClientNetworkLayer {
                 });
             }
             xhr.send(body);
+
+            const xhrId = getUniqueRequestID(request);
+            if (this.env) {
+                this.env._xhrRequests.set(xhrId, {
+                    abort: () => {
+                        console.log('ABORTED');
+                    },
+                    onProgress: () => {}
+                });
+            }
         }).then(data => {
             request.resolve({response: data});
 

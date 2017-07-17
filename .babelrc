@@ -8,7 +8,10 @@
             ],
             "plugins": [
                 "react-require",
-                "transform-flow-strip-types"
+                "transform-flow-strip-types",
+                ["transform-builtin-extend", {
+                  "globals": ["Promise"]
+                }]
             ],
             "minified": false
         },
@@ -21,7 +24,10 @@
             "plugins": [
                 "react-require",
                 "transform-flow-strip-types",
-                "./testBabelRelayPlugin"
+                "./testBabelRelayPlugin",
+                ["transform-builtin-extend", {
+                  "globals": ["Promise"]
+                }]
             ],
             "minified": false
         }
