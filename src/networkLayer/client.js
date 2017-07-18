@@ -9,10 +9,6 @@ export type ClientNetworkLayerOpts = {
     env: Relay.Environment
 };
 
-export type RequestPromiseCallback = (xhr: XMLHttpRequest, resolve: (any) => void, reject: (any) => void) => boolean;
-export type RequestCallback = (data: Object, request: any, requestType: string) => any;
-
-
 const getUniqueRequestID = (request) => request.getID
     ? request.getID()
     : request.getVariables().input_0.clientMutationId;
@@ -25,9 +21,6 @@ export default class ClientNetworkLayer {
     };
     credentials = 'same-origin';
     env: Relay.Environment;
-    _onLoad: RequestCallback;
-    _onLoadImmediate: RequestPromiseCallback;
-    _onError: RequestPromiseCallback;
 
     supports() {}
 
@@ -36,12 +29,12 @@ export default class ClientNetworkLayer {
     }
 
     sendQuery = (queryRequest: any) => {
-        return this._send(queryRequest.getID(), 'query', queryRequest);
+        return this.send(queryRequest.getID(), 'query', queryRequest);
     };
 
     sendMutation(mutationRequest: any) {
         const id = getUniqueRequestID(mutationRequest);
-        return this._send(id, 'mutation', mutationRequest);
+        return this.send(id, 'mutation', mutationRequest);
     }
 
     // We store the XHR as a RequestObject so that it can be retrieved and manipulated later
@@ -65,13 +58,31 @@ export default class ClientNetworkLayer {
 
     // These methods allow you to handle the promise rejection in your subclass
     // while also allowing access to the underlying xhr
-    _onLoadImmediate = () => false;
-    _onError = () => false;
+    onError(xhr: XMLHttpRequest, resolve: () => void, reject: (err: Error) => void) {
+        const error = new Error(JSON.stringify(xhr.response.errors));
+        reject(error);
+    }
 
-    _onLoad = () => {};
-    _getHeaders = () => this.headers;
+    getHeaders() { return this.headers; }
+    onLoad(xhr: XMLHttpRequest, resolve: () => void, reject: (any) => void) {
+        if (xhr.status >= 400) {
+            reject(new Error("Request failed"));
+            return;
+        }
 
-    _send = (id: string, requestType: string, request: any) => {
+        if (!xhr.response) {
+            reject(new Error("Invalid JSON response returned from server"));
+        }
+
+        const {data} = xhr.response;
+        if ('errors' in xhr.response || !data) {
+            this.onError(xhr, resolve, reject);
+        } else {
+            resolve(data);
+        }
+    }
+
+    send(id: string, requestType: string, request: any): Promise<*> {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
 
@@ -82,39 +93,14 @@ export default class ClientNetworkLayer {
             }
 
             xhr.addEventListener("load", () => {
-                const bailOnLoadImmediate = this._onLoadImmediate(xhr, resolve, reject);
-                if (bailOnLoadImmediate) {
-                    return;
-                }
-
-                if (xhr.status >= 400) {
-                    reject(new Error("Request failed"));
-                    return;
-                }
-
-                if (!xhr.response) {
-                    reject(new Error("Invalid JSON response returned from server"));
-                }
-
-                const {data} = xhr.response;
-                if ('errors' in xhr.response || !data) {
-                    const bailOnError = this._onError(xhr, resolve, reject);
-                    if (bailOnError) {
-                        return;
-                    }
-
-                    const error = new Error(JSON.stringify(xhr.response.errors));
-                    reject(error);
-                } else {
-                    resolve(data);
-                }
+                this.onLoad(xhr, resolve, reject);
             });
 
             xhr.addEventListener("error", () => {
                 reject(new TypeError('Network request failed'));
             });
 
-            const headers = this._getHeaders();
+            const headers = this.getHeaders();
             const files = request.getFiles && request.getFiles();
 
             var body;
@@ -152,7 +138,6 @@ export default class ClientNetworkLayer {
             xhr.send(body);
         }).then(data => {
             request.resolve({response: data});
-            this._onLoad(data, request, requestType);
         }).catch(err => {
             request.reject(err);
         });
