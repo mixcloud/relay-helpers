@@ -6,25 +6,18 @@ type RequestObjectOpts = {
     removeSelf: () => void
 };
 
-type ProgressCallback = (loaded?: number, total?: number) => void;
-
-const cbTypes = {
-    DOWNLOAD: 1,
-    UPLOAD: 2
-};
+export type ProgressCallback = (loaded: number, total: number) => void;
 
 class RequestObject {
     id: string;
     _xhr: XMLHttpRequest;
     removeSelf: () => void;
-    downloadProgressCallback: ProgressCallback = () => {};
-    uploadProgressCallback: ProgressCallback = () => {};
+    uploadProgressCallback: ?ProgressCallback;
 
     constructor(opts: RequestObjectOpts) {
         Object.assign(this, opts);
-        this._xhr.addEventListener("progress", this.handleProgress(cbTypes.DOWNLOAD), false);
         if (this._xhr.upload) {
-            this._xhr.upload.addEventListener("progress", this.handleProgress(cbTypes.UPLOAD), false);
+            this._xhr.upload.addEventListener("progress", this.handleUploadProgress, false);
         }
     }
 
@@ -33,27 +26,18 @@ class RequestObject {
         this.removeSelf();
     }
 
-    handleProgress = (cbType: 1 | 2) => {
-        const handler = (event: any) => {
-            event = (event: ProgressEvent); // TODO: Fix in later version of Flow
-            if (!event.lengthComputable || !(event.total > 0) || this._xhr.readyState >= 4) {
-                return;
-            }
+    handleUploadProgress = (event: any) => {
+        event = (event: ProgressEvent); // TODO: Fix in later version of Flow
+        if (!event.lengthComputable || !(event.total > 0) || this._xhr.readyState >= 4) {
+            return;
+        }
 
-            const {loaded, total} = event;
+        const {loaded, total} = event;
 
-            if (cbType === cbTypes.DOWNLOAD) {
-                this.downloadProgressCallback(loaded, total);
-            } else if (cbType === cbTypes.UPLOAD) {
-                this.uploadProgressCallback(loaded, total);
-            }
-        };
-        return handler.bind(this);
+        if (this.uploadProgressCallback) {
+            this.uploadProgressCallback(loaded, total);
+        }
     };
-
-    onProgress(cb: ProgressCallback) {
-        this.downloadProgressCallback = cb;
-    }
 
     onUploadProgress(cb: ProgressCallback) {
         this.uploadProgressCallback = cb;

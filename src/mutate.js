@@ -1,6 +1,7 @@
 /* @flow */
 import Relay from 'react-relay/classic';
 import type {FileMap} from 'react-relay/lib/RelayTypes';
+import type {ProgressCallback} from './networkLayer/requestObject';
 
 type RangeBehavior = 'prepend' | 'append' | 'ignore' | 'refetch' | 'remove';
 
@@ -52,7 +53,7 @@ type PromiseParams = {env: Relay.Environment, config: MutationConfig} | Function
 
 class MutationPromise extends Promise {
     abort: () => void = () => {};
-    onProgress: () => void = () => {};
+    onUploadProgress: (cb: ProgressCallback) => void;
     _env: Relay.Environment;
     _mutation: Relay.GraphQLMutation;
 
@@ -87,27 +88,19 @@ class MutationPromise extends Promise {
         if (this.request) {
             this.request.abort();
         }
-    }
-
-    onProgress = (cb) => {
-        if (this.request) {
-            this.request.onProgress(cb);
-        }
-        return this; // To allow for method chaining
-    }
+    };
 
     onUploadProgress = (cb) => {
         if (this.request) {
             this.request.onUploadProgress(cb);
         }
         return this; // To allow for method chaining
-    }
+    };
 
     get request() {
         try {
             const mutationId = this._mutation._transaction.id;
-            const request = this._env._requests.get(mutationId);
-            return request;
+            return this._env._requests.get(mutationId);
         } catch (_) {
             return null;
         }
