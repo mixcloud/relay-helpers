@@ -15,7 +15,7 @@
     "flow": "flow .",
     "compile": "BABEL_ENV=build babel --ignore __tests__,__mocks__ --out-dir lib/ src/",
     "prepublish": "npm run compile",
-    "jon-watch": "BABEL_ENV=build babel -w --ignore __tests__,__mocks__ --out-dir /Users/jonathan/src/github.com/mixcloud/mixcloud/website/js/node_modules/relay-helpers/lib/ src "
+    "local-watch": " BABEL_ENV=build babel -w --ignore __tests__,__mocks__ --out-dir ../mixcloud/website/js/node_modules/relay-helpers/lib/ src"
   },
   "files": [
     "LICENSE",
