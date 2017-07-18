@@ -96,6 +96,13 @@ class MutationPromise extends Promise {
         return this; // To allow for method chaining
     }
 
+    onUploadProgress = (cb) => {
+        if (this.request) {
+            this.request.onUploadProgress(cb);
+        }
+        return this; // To allow for method chaining
+    }
+
     get request() {
         try {
             const mutationId = this._mutation._transaction.id;
