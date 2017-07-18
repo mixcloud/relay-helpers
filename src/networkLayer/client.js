@@ -1,5 +1,6 @@
 /* @flow */
 import Relay from 'react-relay/classic';
+import RequestObject from './requestObject';
 
 export type ClientNetworkLayerOpts = {
     graphqlUrl?: ?string,
@@ -62,6 +63,25 @@ export default class ClientNetworkLayer {
         return this._send(id, 'mutation', mutationRequest);
     }
 
+    // We store the XHR as a RequestObject so that it can be retrieved and manipulated later
+    _storeRequest = (request: XMLHttpRequest, id: string) => {
+        const removeSelf = () => {
+            this.env._requests.delete(id);
+        };
+
+        const endOfLifeEvents = ['error', 'abort', 'loadend', 'timeout'];
+        endOfLifeEvents.forEach(event => {
+            request.addEventListener(event, removeSelf);
+        });
+
+        const requestObj = new RequestObject({
+            id,
+            request,
+            removeSelf
+        });
+        this.env._requests.set(id, requestObj);
+    };
+
     _send = (id: string, requestType: string, request: any) => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -71,16 +91,6 @@ export default class ClientNetworkLayer {
             if (this.credentials) {
                 xhr.withCredentials = true;
             }
-
-            xhr.addEventListener("progress", (event: ProgressEvent) => {
-                console.log(event)
-                if (!event.lengthComputable || !(event.total > 0) || xhr.readyState >= 4) {
-                    return;
-                }
-
-                const {loaded, total} = event;
-                console.log('progress', loaded, total); // TODO: Work out why this isn't working
-            }, false);
 
             xhr.addEventListener("load", () => {
                 if (xhr.status === 403 && this.on403callback) {
@@ -120,10 +130,6 @@ export default class ClientNetworkLayer {
                 reject(new TypeError('Network request failed'));
             });
 
-            xhr.addEventListener("abort", () => {
-                // TODO: Remove request from xhrs on abort, success and error
-            });
-
             const headers = this.csrf ? {...this.headers, 'X-CSRFToken': getCsrfCookie()} : {...this.headers};
 
             const files = request.getFiles && request.getFiles();
@@ -156,17 +162,10 @@ export default class ClientNetworkLayer {
                 xhr.setRequestHeader(name, headers[name]);
             });
 
-            xhr.send(body);
-
             const xhrId = getUniqueRequestID(request);
-            if (this.env) {
-                this.env._xhrRequests.set(xhrId, {
-                    abort: () => {
-                        console.log('ABORTED');
-                    },
-                    onProgress: () => {}
-                });
-            }
+            this._storeRequest(xhr, xhrId);
+
+            xhr.send(body);
         }).then(data => {
             request.resolve({response: data});
 

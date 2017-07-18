@@ -82,21 +82,28 @@ class MutationPromise extends Promise {
 
         this.mutation = mutation;
         this.env = env;
-        this.abort = () => {
-            if (this.xhr) { // TODO: Don't call xhr and remove when resolved
-                this.xhr.abort();
-            }
-        };
-        this.onProgress = () => {};
     }
 
-    get xhr() {
+    abort = () => {
+        if (this.request) {
+            this.request.abort();
+        }
+    }
+
+    onProgress = (cb) => {
+        if (this.request) {
+            this.request.onProgress(cb);
+        }
+        return this; // To allow for method chaining
+    }
+
+    get request() {
         try {
             const mutationId = this.mutation._transaction.id;
-            const xhr = this.env._xhrRequests.get(mutationId);
-            return xhr;
+            const request = this.env._requests.get(mutationId);
+            return request;
         } catch (e) {
-            console.error('No xhr or mutation');
+            console.error('No request or mutation');
         }
     }
 }
