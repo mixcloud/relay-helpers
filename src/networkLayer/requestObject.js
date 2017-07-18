@@ -23,7 +23,8 @@ class RequestObject {
     }
 
     onProgress(cb: ProgressCallback) {
-        this._xhr.addEventListener("progress", (event: ProgressEvent) => {
+        this._xhr.addEventListener("progress", (event: any) => {
+            event = (event: ProgressEvent); // TODO: Fix in later version of Flow
             if (!event.lengthComputable || !(event.total > 0) || this._xhr.readyState >= 4) {
                 return;  // TODO: Check this is working
             }
