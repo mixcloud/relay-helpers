@@ -2,13 +2,15 @@
 
 type RequestObjectOpts = {
     id: string,
-    request: XMLHttpRequest,
+    _xhr: XMLHttpRequest,
     removeSelf: () => void
 };
 
+type ProgressCallback = (loaded?: number, total?: number) => void;
+
 class RequestObject {
     id: string;
-    request: XMLHttpRequest;
+    _xhr: XMLHttpRequest;
     removeSelf: () => void;
 
     constructor(opts: RequestObjectOpts) {
@@ -16,13 +18,13 @@ class RequestObject {
     }
 
     abort() {
-        this.request.abort();
+        this._xhr.abort();
         this.removeSelf();
     }
 
-    onProgress(cb: Function) {
-        this.request.addEventListener("progress", (event: ProgressEvent) => {
-            if (!event.lengthComputable || !(event.total > 0) || this.request.readyState >= 4) {
+    onProgress(cb: ProgressCallback) {
+        this._xhr.addEventListener("progress", (event: ProgressEvent) => {
+            if (!event.lengthComputable || !(event.total > 0) || this._xhr.readyState >= 4) {
                 return;  // TODO: Check this is working
             }
             const {loaded, total} = event;

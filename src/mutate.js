@@ -50,12 +50,11 @@ export type Mutate = (config: MutationConfig) => Promise<*>;
 
 type PromiseParams = {env: Relay.Environment, config: MutationConfig} | Function;
 
-// TODO: Does this need a polyfill for node?
 class MutationPromise extends Promise {
     abort: () => void = () => {};
     onProgress: () => void = () => {};
-    env: Relay.Environment;
-    mutation: Relay.GraphQLMutation;
+    _env: Relay.Environment;
+    _mutation: Relay.GraphQLMutation;
 
     constructor(params: PromiseParams) {
         if (typeof params === 'function') {
@@ -80,8 +79,8 @@ class MutationPromise extends Promise {
             mutation.commit(configs);
         });
 
-        this.mutation = mutation;
-        this.env = env;
+        this._mutation = mutation;
+        this._env = env;
     }
 
     abort = () => {
@@ -99,11 +98,11 @@ class MutationPromise extends Promise {
 
     get request() {
         try {
-            const mutationId = this.mutation._transaction.id;
-            const request = this.env._requests.get(mutationId);
+            const mutationId = this._mutation._transaction.id;
+            const request = this._env._requests.get(mutationId);
             return request;
-        } catch (e) {
-            console.error('No request or mutation');
+        } catch (_) {
+            return null;
         }
     }
 }

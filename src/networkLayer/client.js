@@ -6,30 +6,12 @@ export type ClientNetworkLayerOpts = {
     graphqlUrl?: ?string,
     headers?: ?Headers,
     credentials?: ?string,
-    csrf?: ?boolean,
-    on403callback?: ?() => void,
-    onSpeedbarResponse?: ?(response: any) => void,
-    onJailedCallback?: ?() => void,
-    onMutationStartCallback?: ?(id: number, data?: Object) => void,
-    onMutationProgressCallback?: ?(id: number, received: number, size: number) => void,
     env: Relay.Environment
 };
 
-var nextRequestId = 0;
-var nextTraceId = 0;
+export type RequestPromiseCallback = (xhr: XMLHttpRequest, resolve: (any) => void, reject: (any) => void) => boolean;
+export type RequestCallback = (data: Object, request: any, requestType: string) => any;
 
-function addTraceIds(trace) {
-    const keys = Object.keys(trace).filter(key => key !== '__trace');
-    if (trace.__trace) {
-        trace.__clientTraceId = nextTraceId++;
-    }
-    if (keys.length) {
-        keys.forEach(key => {
-            addTraceIds(trace[key]);
-        });
-    }
-    return trace;
-}
 
 const getUniqueRequestID = (request) => request.getID
     ? request.getID()
@@ -42,11 +24,10 @@ export default class ClientNetworkLayer {
         'Content-Type': 'application/json',
     };
     credentials = 'same-origin';
-    csrf = true;
-    on403callback = null;
-    onSpeedbarResponse = null;
-    onJailedCallback = null;
     env: Relay.Environment;
+    _onLoad: RequestCallback;
+    _onLoadImmediate: RequestPromiseCallback;
+    _onError: RequestPromiseCallback;
 
     supports() {}
 
@@ -64,23 +45,31 @@ export default class ClientNetworkLayer {
     }
 
     // We store the XHR as a RequestObject so that it can be retrieved and manipulated later
-    _storeRequest = (request: XMLHttpRequest, id: string) => {
+    _storeRequest = (xhr: XMLHttpRequest, id: string) => {
         const removeSelf = () => {
             this.env._requests.delete(id);
         };
 
         const endOfLifeEvents = ['error', 'abort', 'loadend', 'timeout'];
         endOfLifeEvents.forEach(event => {
-            request.addEventListener(event, removeSelf);
+            xhr.addEventListener(event, removeSelf);
         });
 
         const requestObj = new RequestObject({
             id,
-            request,
+            _xhr: xhr,
             removeSelf
         });
         this.env._requests.set(id, requestObj);
     };
+
+    // These methods allow you to handle the promise rejection in your subclass
+    // while also allowing access to the underlying xhr
+    _onLoadImmediate = () => false;
+    _onError = () => false;
+
+    _onLoad = () => {};
+    _getHeaders = () => this.headers;
 
     _send = (id: string, requestType: string, request: any) => {
         return new Promise((resolve, reject) => {
@@ -93,9 +82,8 @@ export default class ClientNetworkLayer {
             }
 
             xhr.addEventListener("load", () => {
-                if (xhr.status === 403 && this.on403callback) {
-                    this.on403callback();
-                    reject(new Error("Request failed"));
+                const bailOnLoadImmediate = this._onLoadImmediate(xhr, resolve, reject);
+                if (bailOnLoadImmediate) {
                     return;
                 }
 
@@ -110,17 +98,13 @@ export default class ClientNetworkLayer {
 
                 const {data} = xhr.response;
                 if ('errors' in xhr.response || !data) {
+                    const bailOnError = this._onError(xhr, resolve, reject);
+                    if (bailOnError) {
+                        return;
+                    }
+
                     const error = new Error(JSON.stringify(xhr.response.errors));
                     reject(error);
-
-                    if (this.onJailedCallback) {
-                        for (const err of xhr.response.errors) {
-                            if (err && err.message === 'jailed') {
-                                this.onJailedCallback();
-                                break;
-                            }
-                        }
-                    }
                 } else {
                     resolve(data);
                 }
@@ -130,9 +114,9 @@ export default class ClientNetworkLayer {
                 reject(new TypeError('Network request failed'));
             });
 
-            const headers = this.csrf ? {...this.headers, 'X-CSRFToken': getCsrfCookie()} : {...this.headers};
-
+            const headers = this._getHeaders();
             const files = request.getFiles && request.getFiles();
+
             var body;
             if (files) {
                 var form = new FormData();
@@ -168,39 +152,9 @@ export default class ClientNetworkLayer {
             xhr.send(body);
         }).then(data => {
             request.resolve({response: data});
-
-            if (this.onSpeedbarResponse) {
-                const onSpeedbarResponse = this.onSpeedbarResponse; // For flow
-
-                const name = (request.getQuery)
-                        ? request.getQuery().getName()
-                        : (request.getMutation)
-                        ? request.getMutation().getName()
-                        : 'Unknown';
-
-                if (data && data.__speedbar) {
-                    onSpeedbarResponse({
-                        requestId: `r${nextRequestId++}`, // TODO: relayReqId doesn't seem to be unique...req.relayReqId,
-                        name,
-                        speedbar: data.__speedbar,
-                        trace: addTraceIds(data.__trace),
-                        query: request.getQueryString(),
-                        variables: request.getVariables(),
-                        response: data,
-                        type: requestType
-                    });
-                }
-            }
+            this._onLoad(data, request, requestType);
         }).catch(err => {
             request.reject(err);
         });
     }
-}
-
-
-const CSRF_COOKIE_RE = /(?:^|;)\s*csrftoken=([^;\s]*)/;
-
-function getCsrfCookie(): ?string {
-    var result = CSRF_COOKIE_RE.exec(document.cookie);
-    return result ? result[1] : null;
 }
