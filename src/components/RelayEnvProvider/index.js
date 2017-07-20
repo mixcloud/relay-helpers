@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Relay from 'react-relay/classic';
 import QueryFetchCache from "./queryFetchCache";
 import mutate from '../../mutate';
-import type {MutationConfig} from '../../mutate';
+import type {MutationConfig, Mutate} from '../../mutate';
 import type {ShouldForceFetch, OnQuerySuccess} from './queryFetchCache';
 
 
@@ -27,7 +27,7 @@ export type RelayEnvContext = {
     removeResetListener: (callback: () => void) => void,
     shouldForceFetch: ShouldForceFetch,
     onQuerySuccess: OnQuerySuccess,
-    mutate: (config: MutationConfig) => Promise<*>
+    mutate: Mutate
 };
 
 

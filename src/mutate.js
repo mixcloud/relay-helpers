@@ -47,66 +47,49 @@ export type MutationConfig = {
     configs?: RelayMutationConfig[]
 };
 
-export type Mutate = (config: MutationConfig) => Promise<*>;
-
-type PromiseParams = {env: Relay.Environment, config: MutationConfig} | Function;
-
-class MutationPromise extends Promise {
-    abort: () => void = () => {};
-    onUploadProgress: (cb: ProgressCallback) => void;
-    _env: Relay.Environment;
-    _mutation: Relay.GraphQLMutation;
-
-    constructor(params: PromiseParams) {
-        if (typeof params === 'function') {
-            // Promise constructor is called again on catch, in which case we
-            // just run the executor directly as a normal promise.
-            super(params);
-            return;
-        }
-
-        const {env, config} = params;
-        const {query, variables, files = null, optimisticResponse, configs = []} = config;
-
-        var mutation;
-        super((resolve, reject) => {
-            mutation = new Relay.GraphQLMutation(query, variables, files, env, {
-                onSuccess: resolve,
-                onFailure: (transaction) => reject(transaction.getError())
-            });
-            if (optimisticResponse) {
-                mutation.applyOptimistic(query, optimisticResponse, configs);
-            }
-            mutation.commit(configs);
-        });
-
-        this._mutation = mutation;
-        this._env = env;
-    }
-
-    abort = () => {
-        if (this.request) {
-            this.request.abort();
-        }
-    };
-
-    onUploadProgress = (cb) => {
-        if (this.request) {
-            this.request.onUploadProgress(cb);
-        }
-        return this; // To allow for method chaining
-    };
-
-    get request() {
-        try {
-            const mutationId = this._mutation._transaction.id;
-            return this._env._requests.get(mutationId);
-        } catch (_) {
-            return null;
-        }
-    }
-}
+export type MutationPromise = {
+    _env: Relay.Environment,
+    _mutation: Relay.GraphQLMutation,
+    abort: () => void,
+    onUploadProgress: (cb: ProgressCallback) => MutationPromise,
+    then: (any) => MutationPromise,
+    catch: (any) => void
+};
+export type Mutate = (config: MutationConfig) => MutationPromise;
 
 export default function mutate(env: Relay.Environment, config: MutationConfig): MutationPromise {
-    return new MutationPromise({env, config});
+    const {query, variables, files = null, optimisticResponse, configs = []} = config;
+
+    var mutation;
+    var promise = new Promise((resolve, reject) => {
+        mutation = new Relay.GraphQLMutation(query, variables, files, env, {
+            onSuccess: resolve,
+            onFailure: (transaction) => reject(transaction.getError())
+        });
+        if (optimisticResponse) {
+            mutation.applyOptimistic(query, optimisticResponse, configs);
+        }
+        mutation.commit(configs);
+    });
+
+    promise = (promise: any); // I give up
+
+    promise._mutation = mutation;
+    promise._env = env;
+    promise.abort = () => {
+        const mutationId = (promise: any)._mutation._transaction.id;
+        const request = (promise: any)._env._requests.get(mutationId);
+        if (request) {
+            request.abort();
+        }
+    };
+    promise.onUploadProgress = (cb) => {
+        const mutationId = (promise: any)._mutation._transaction.id;
+        const request = (promise: any)._env._requests.get(mutationId);
+        if (request) {
+            request.onUploadProgress(cb);
+        }
+        return promise; // To allow for method chaining
+    };
+    return promise;
 }
