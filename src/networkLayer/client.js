@@ -64,6 +64,7 @@ export default class ClientNetworkLayer {
     }
 
     getHeaders() { return this.headers; }
+
     onLoad(xhr: XMLHttpRequest, resolve: () => void, reject: (any) => void) {
         if (xhr.status >= 400) {
             reject(new Error("Request failed"));
@@ -98,6 +99,10 @@ export default class ClientNetworkLayer {
 
             xhr.addEventListener("error", () => {
                 reject(new TypeError('Network request failed'));
+            });
+
+            xhr.addEventListener("abort", () => {
+                reject({cancelled: true});
             });
 
             const headers = this.getHeaders();
