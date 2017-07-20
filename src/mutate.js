@@ -57,6 +57,11 @@ export type MutationPromise = {
 };
 export type Mutate = (config: MutationConfig) => MutationPromise;
 
+function getPromiseRequest(promise: any) {
+    const mutationId = promise._mutation._transaction.id;
+    return promise._env._requests.get(mutationId);
+}
+
 export default function mutate(env: Relay.Environment, config: MutationConfig): MutationPromise {
     const {query, variables, files = null, optimisticResponse, configs = []} = config;
 
@@ -77,15 +82,13 @@ export default function mutate(env: Relay.Environment, config: MutationConfig): 
     promise._mutation = mutation;
     promise._env = env;
     promise.abort = () => {
-        const mutationId = (promise: any)._mutation._transaction.id;
-        const request = (promise: any)._env._requests.get(mutationId);
+        const request = getPromiseRequest(promise);
         if (request) {
             request.abort();
         }
     };
     promise.onUploadProgress = (cb) => {
-        const mutationId = (promise: any)._mutation._transaction.id;
-        const request = (promise: any)._env._requests.get(mutationId);
+        const request = getPromiseRequest(promise);
         if (request) {
             request.onUploadProgress(cb);
         }
