@@ -48,8 +48,6 @@ export type MutationConfig = {
 };
 
 export type MutationPromise = {
-    _env: Relay.Environment,
-    _mutation: Relay.GraphQLMutation,
     abort: () => void,
     onUploadProgress: (cb: ProgressCallback) => MutationPromise,
     then: (any) => MutationPromise,
@@ -57,10 +55,6 @@ export type MutationPromise = {
 };
 export type Mutate = (config: MutationConfig) => MutationPromise;
 
-function getPromiseRequest(promise: any) {
-    const mutationId = promise._mutation._transaction.id;
-    return promise._env._requests.get(mutationId);
-}
 
 export default function mutate(env: Relay.Environment, config: MutationConfig): MutationPromise {
     const {query, variables, files = null, optimisticResponse, configs = []} = config;
@@ -77,10 +71,10 @@ export default function mutate(env: Relay.Environment, config: MutationConfig): 
         mutation.commit(configs);
     });
 
+    const getPromiseRequest = () => env._requests.get(mutation._transaction.id);
+
     promise = (promise: any); // I give up
 
-    promise._mutation = mutation;
-    promise._env = env;
     promise.abort = () => {
         const request = getPromiseRequest(promise);
         if (request) {
