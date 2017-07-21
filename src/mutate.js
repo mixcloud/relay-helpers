@@ -54,7 +54,7 @@ declare class MutationPromise<+R> {
     ): MutationPromise<R | U>;
 
     onUploadProgress<T>(
-        cb: (any) => void
+        cb: Function
     ): MutationPromise<T>;
 
     abort: () => void;
