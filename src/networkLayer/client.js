@@ -143,6 +143,7 @@ export default class ClientNetworkLayer {
             xhr.send(body);
         }).then(data => {
             request.resolve({response: data});
+            return data;
         }).catch(err => {
             request.reject(err);
         });
