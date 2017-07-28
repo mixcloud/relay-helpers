@@ -2,10 +2,12 @@
 import Relay from 'react-relay/classic';
 import RequestObject from './requestObject';
 
+type Headers = {[name: string]: string};
+
 export type ClientNetworkLayerOpts = {
-    graphqlUrl?: ?string,
-    headers?: ?Headers,
-    credentials?: ?string,
+    graphqlUrl?: string,
+    headers?: Headers,
+    withCredentials?: boolean,
     env: Relay.Environment
 };
 
@@ -14,13 +16,21 @@ const getUniqueRequestID = (request) => request.getID
     : request.getVariables().input_0.clientMutationId;
 
 export default class ClientNetworkLayer {
-    url = '/graphql';
-    headers = {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-    };
-    credentials = 'same-origin';
+    url: string;
+    headers: Headers;
+    withCredentials: boolean;
     env: Relay.Environment;
+
+    constructor({graphqlUrl = '/graphql', headers = {}, withCredentials = false, env}: ClientNetworkLayerOpts = {}) {
+        this.url = graphqlUrl;
+        this.env = env;
+        this.withCredentials = withCredentials;
+        this.headers = {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            ...headers
+        };
+    }
 
     supports() {}
 
@@ -89,7 +99,7 @@ export default class ClientNetworkLayer {
 
             xhr.open('POST', this.url, true);
             xhr.responseType = 'json';
-            if (this.credentials) {
+            if (this.withCredentials) {
                 xhr.withCredentials = true;
             }
 
