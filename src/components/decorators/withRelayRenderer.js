@@ -48,6 +48,8 @@ export default <P: Object>({
             forceFetch: false
         };
 
+        useTtl: boolean = true;
+
         componentDidMount() {
             this.context.relayEnv.addResetListener(this.onRelayEnvReset);
         }
@@ -61,6 +63,7 @@ export default <P: Object>({
             if (!deepEqual(newQueryConfig, this.queryConfig)) {
                 // only update the queryConfig if it has changed, otherwise Relay will run the query again
                 this.queryConfig = newQueryConfig;
+                this.useTtl = true;
             }
         }
 
@@ -165,8 +168,12 @@ export default <P: Object>({
             var shouldForceFetch = false;
             if (!env.isServer) {
                 shouldForceFetch = forceFetch || this.props.forceFetch;
-                if (!shouldForceFetch && ttl) {
+                if (!shouldForceFetch && ttl && this.useTtl) {
                     shouldForceFetch = this.context.relayEnv.shouldForceFetch(this.queryConfig, ttl);
+
+                    // The TTL should only take effect on initial mount or if the query config changes - not
+                    // every time the component is rendered
+                    this.useTtl = false;
                 }
             }
 
