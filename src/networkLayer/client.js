@@ -75,6 +75,8 @@ export default class ClientNetworkLayer {
 
     getHeaders() { return this.headers; }
 
+    getUrl(id: string, requestType: string, request: any): string { return this.url; }  // eslint-disable-line no-unused-vars
+
     onLoad(xhr: XMLHttpRequest, resolve: () => void, reject: (any) => void) {
         if (xhr.status >= 400) {
             reject(new Error("Request failed"));
@@ -97,7 +99,7 @@ export default class ClientNetworkLayer {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
 
-            xhr.open('POST', this.url, true);
+            xhr.open('POST', this.getUrl(id, requestType, request), true);
             xhr.responseType = 'json';
             if (this.withCredentials) {
                 xhr.withCredentials = true;
