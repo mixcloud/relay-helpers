@@ -85,6 +85,7 @@ export default class ClientNetworkLayer {
 
         if (!xhr.response) {
             reject(new Error("Invalid JSON response returned from server"));
+            return;
         }
 
         const {data} = xhr.response;
