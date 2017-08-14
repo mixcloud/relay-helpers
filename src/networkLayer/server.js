@@ -37,7 +37,12 @@ export default class ServerNetworkLayer {
             }).then((response) => {
                 const {data} = response;
                 if ('errors' in response || !data) {
-                    const error = new Error("Server Error");
+                    const queryName = queryRequest.getQuery().getName();
+                    var errorMsg = `Server Error (${queryName})`;
+                    try {
+                        errorMsg += ` ${JSON.stringify(response.errors)}`;
+                    } catch (err) {} // eslint-disable-line no-empty
+                    const error = new Error(errorMsg);
                     queryRequest.reject(error);
                     reject(error);
                 } else {
