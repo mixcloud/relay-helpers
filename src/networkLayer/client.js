@@ -68,8 +68,8 @@ export default class ClientNetworkLayer {
 
     // These methods allow you to handle the promise rejection in your subclass
     // while also allowing access to the underlying xhr
-    onError(xhr: XMLHttpRequest, resolve: () => void, reject: (err: Error) => void) {
-        const error = new Error(JSON.stringify(xhr.response.errors));
+    onError(xhr: XMLHttpRequest, resolve: () => void, reject: (err: Error) => void, response: Object) {
+        const error = new Error(JSON.stringify(response.errors));
         reject(error);
     }
 
@@ -88,9 +88,18 @@ export default class ClientNetworkLayer {
             return;
         }
 
-        const {data} = xhr.response;
-        if ('errors' in xhr.response || !data) {
-            this.onError(xhr, resolve, reject);
+        var response = xhr.response;
+        if (typeof response === 'string') {
+            try {
+                response = JSON.parse(response);
+            } catch (err) {
+                reject(new Error("Invalid JSON response returned from server"));
+                return;
+            }
+        }
+        const {data} = response;
+        if ('errors' in response || !data) {
+            this.onError(xhr, resolve, reject, response);
         } else {
             resolve(data);
         }
