@@ -28,6 +28,7 @@ export default class ClientNetworkLayer {
         this.headers = {
             'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             ...headers
         };
     }
