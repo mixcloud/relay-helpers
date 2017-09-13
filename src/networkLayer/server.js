@@ -26,31 +26,27 @@ export default class ServerNetworkLayer {
     supports() {}
 
     sendQueries(queryRequests: QueryRequest[]) {
-        return Promise.all(queryRequests.map(this._sendQuery));
+        queryRequests.forEach(this._sendQuery);
     }
 
     _sendQuery = (queryRequest: QueryRequest) => {
-        return new Promise((resolve, reject) => {
-            this._fetchQuery({
-                query: queryRequest.getQueryString(),
-                variables: queryRequest.getVariables()
-            }).then((response) => {
-                const {data} = response;
-                if ('errors' in response || !data) {
-                    const queryName = queryRequest.getQuery().getName();
-                    var errorMsg = `Server Error (${queryName})`;
-                    try {
-                        errorMsg += ` ${JSON.stringify(response.errors)}`;
-                    } catch (err) {} // eslint-disable-line no-empty
-                    const error = new Error(errorMsg);
-                    queryRequest.reject(error);
-                    reject(error);
-                } else {
-                    queryRequest.resolve({response: data});
-                    resolve(data);
-                    this.queryResults[queryRequest.getID()] = data;
-                }
-            });
+        this._fetchQuery({
+            query: queryRequest.getQueryString(),
+            variables: queryRequest.getVariables()
+        }).then((response) => {
+            const {data} = response;
+            if ('errors' in response || !data) {
+                const queryName = queryRequest.getQuery().getName();
+                var errorMsg = `Server Error (${queryName})`;
+                try {
+                    errorMsg += ` ${JSON.stringify(response.errors)}`;
+                } catch (err) {} // eslint-disable-line no-empty
+                const error = new Error(errorMsg);
+                queryRequest.reject(error);
+            } else {
+                queryRequest.resolve({response: data});
+                this.queryResults[queryRequest.getID()] = data;
+            }
         });
     }
 }
