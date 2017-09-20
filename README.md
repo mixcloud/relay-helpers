@@ -242,6 +242,31 @@ Username = withRelayQuery({
     }
 })(Username);
 ```
+If there is more than one query:
+```javascript
+UserWithTodo = withRelayQuery({
+    query: [
+        Relay.QL`
+            query {
+                user(id: $userId) {
+                    username
+                }
+            }
+        `,
+        Relay.QL`
+            query {
+                todo(id: $todoId) {
+                    name
+                }
+            }
+        `
+    ],
+    params: {
+        userId: {required: true},
+        todoId: {required: true}
+    }
+})(Username);
+```
 
 #### Options
 
