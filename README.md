@@ -244,7 +244,7 @@ Username = withRelayQuery({
 ```
 If there is more than one query:
 ```javascript
-UserWithTodo = withRelayQuery({
+const UserWithTodo = withRelayQuery({
     query: [
         Relay.QL`
             query {
