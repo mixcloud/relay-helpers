@@ -36,7 +36,7 @@
   "dependencies": {
     "deep-equal": "^1.0.1",
     "hoist-non-react-statics": "^1.0.3",
-    "react-relay": "1.1.0"
+    "react-relay": "1.4.1"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
