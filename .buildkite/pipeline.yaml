@@ -1,0 +1,48 @@
+steps:
+  - label: ":javascript: Lint"
+    timeout_in_minutes: 3
+    commands:
+      - "yarn install"
+      - "yarn add --peer react@15.6.1 react-dom@15.6.1"
+      - "yarn lint"
+    plugins:
+      - docker#v3.3.0:
+          image: "node:8.16.1-buster"
+    retry:
+      automatic:
+        - exit_status: -1  # Agent was lost
+          limit: 2
+        - exit_status: 255 # Forced agent shutdown
+          limit: 2
+
+  - label: ":javascript: Test"
+    timeout_in_minutes: 3
+    commands:
+      - "yarn install"
+      - "yarn add --peer react@15.6.1 react-dom@15.6.1"
+      - "yarn test"
+    plugins:
+      - docker#v3.3.0:
+          image: "node:8.16.1-buster"
+    retry:
+      automatic:
+        - exit_status: -1  # Agent was lost
+          limit: 2
+        - exit_status: 255 # Forced agent shutdown
+          limit: 2
+
+  - label: ":javascript: Flow"
+    timeout_in_minutes: 3
+    commands:
+      - "yarn install"
+      - "yarn add --peer react@15.6.1 react-dom@15.6.1"
+      - "yarn flow"
+    plugins:
+      - docker#v3.3.0:
+          image: "node:8.16.1-buster"
+    retry:
+      automatic:
+        - exit_status: -1  # Agent was lost
+          limit: 2
+        - exit_status: 255 # Forced agent shutdown
+          limit: 2
